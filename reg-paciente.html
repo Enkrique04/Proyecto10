@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+  <title>Gestión de Pacientes</title>
+</head>
+<body>
+  <h2>Bienvenido a la Gestión de Pacientes</h2>
+  <!-- Formularios y botones de insertar/consultar médicos y pacientes -->
+</body>
+</html>
+
+
+<body>
+  <!-- Incluir barra de navegación desde navbar.html -->
+  <div id="navbar"></div>
+
+  <script>
+      // Insertar el contenido de navbar.html en el elemento con id "navbar"
+      fetch('/navbar.html')
+          .then(response => response.text())
+          .then(data => {
+              document.getElementById('navbar').innerHTML = data;
+          })
+          .catch(error => console.error('Error cargando el navbar:', error));
+  </script>
+</body>
+</html>
+
+<script>
+  // Solicitar el tipo de usuario y ajustar el menú en función de este
+  fetch('/tipo-usuario')
+      .then(response => response.json())
+      .then(data => {
+          const menu = document.getElementById('menu');
+          const tipoUsuario = data.tipo_usuario;
+
+          // Agregar opciones de menú según el tipo de usuario
+          
+          menu.innerHTML += '<li><a href="/">Inicio</a></li>';
+          if (tipoUsuario === 'admin') {
+              menu.innerHTML += '<li><a href="/ver-usuarios">Ver Usuarios</a></li>';
+              menu.innerHTML += '<li><a href="/busqueda.html">Busqueda</a></li>';
+              menu.innerHTML += '<li><a href="/ver-pacientes">Ver Pacientes</a></li>';
+              menu.innerHTML += '<li><a href="/equipos.html">Equipos</a></li>';
+              menu.innerHTML += '<li><a href="/insertar.html">Insertar medicos</a></li>';
+              menu.innerHTML += '<li><a href="/ultimo_uso.html">Ultimo servicio</a></li>';
+              menu.innerHTML += '<li><a href="/tecnico.html">Contratar tecnico</a></li>';
+              menu.innerHTML += '<li><a href="/editar-columnas.html">Columnas</a></li>';
+          } else if (tipoUsuario === 'medico') {
+
+              menu.innerHTML += '<li><a href="/ver-pacientes">Ver Pacientes</a></li>';
+              menu.innerHTML += '<li><a href="/busqueda.html">Busqueda</a></li>';
+              menu.innerHTML += '<li><a href="/editar-pacientes">Editar Pacientes</a></li>';
+              menu.innerHTML += '<li><a href="/equipos.html">Equipos</a></li>';
+          } else if (tipoUsuario === 'paciente') {
+              menu.innerHTML += '<li><a href="/ver-mis-datos">Mis Datos</a></li>';
+          }else if (tipoUsuario === 'tecnico') {
+              menu.innerHTML += '<li><a href="/ultimo_uso.html">Ultimo servicio</a></li>';
+              menu.innerHTML += '<li><a href="/ver-mis-datos">Mis Datos</a></li>';
+          }
+
+          // Opción de cerrar sesión para todos los tipos de usuario
+          menu.innerHTML += '<li><a href="/logout">Cerrar Sesión</a></li>';
+         
+      })
+      .catch(error => console.error('Error obteniendo el tipo de usuario:', error));
+</script>
+
+<body>
+  <h1>Bienvenido a la Gestión de Pacientes</h1>
+  <p>Esta es una página básica para administrar pacientes y sus signos vitales.</p>
+  <form action="/submit-data" method="POST">
+    <label for="name">Nombre del paciente:</label>
+    <input type="text" id="name" name="name">
+    
+    <label for="age">Edad:</label>
+    <input type="number" id="age" name="age">
+  
+    <label for="heart-rate">Frecuencia Cardiaca (bpm):</label>
+    <input type="number" id="heart-rate" name="heart_rate">
+
+    <label for="height">Altura(cm):</label>
+    <input type="number" id="height" name="height">
+
+    <label for="medico_id">Id del medico:</label>
+    <input type="number" id="medico_id" name="medico_id">
+ 
+    <button type="submit">Guardar</button>
+  </form>
+
+<button onclick="window.location.href='/medico_paciente'">Medico de cada paciente</button>
+
+<h2>Buscar un paciente</h2>
+<form action="/buscar-pacientes" method="GET">
+  <label for="name_search">Nombre del paciente:</label>
+  <input type="text" id="name_search" name="name_search">
+  
+  <label for="age_search">Edad:</label>
+  <input type="number" id="age_search" name="age_search">
+  <button type="submit">Buscar paciente</button>
+</form>
+
+</body>
+</html>
