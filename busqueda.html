@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<body>
+  <!-- Incluir barra de navegación desde navbar.html -->
+  <div id="navbar"></div>
+
+  <script>
+      // Insertar el contenido de navbar.html en el elemento con id "navbar"
+      fetch('/navbar.html')
+          .then(response => response.text())
+          .then(data => {
+              document.getElementById('navbar').innerHTML = data;
+          })
+          .catch(error => console.error('Error cargando el navbar:', error));
+  </script>
+</body>
+</html>
+
+<script>
+  // Solicitar el tipo de usuario y ajustar el menú en función de este
+  fetch('/tipo-usuario')
+      .then(response => response.json())
+      .then(data => {
+          const menu = document.getElementById('menu');
+          const tipoUsuario = data.tipo_usuario;
+
+          menu.innerHTML += '<li><a href="/">Inicio</a></li>';
+          if (tipoUsuario === 'admin') {
+              menu.innerHTML += '<li><a href="/ver-usuarios">Ver Usuarios</a></li>';
+              menu.innerHTML += '<li><a href="/ver-pacientes">Ver Pacientes</a></li>';
+              menu.innerHTML += '<li><a href="/equipos.html">Equipos</a></li>';
+              menu.innerHTML += '<li><a href="/insertar.html">Insertar medicos</a></li>';
+              menu.innerHTML += '<li><a href="/ultimo_uso.html">Ultimo servicio</a></li>';
+              menu.innerHTML += '<li><a href="/tecnico.html">Contratar tecnico</a></li>';
+              menu.innerHTML += '<li><a href="/editar-columnas.html">Columnas</a></li>';
+          } else if (tipoUsuario === 'medico') {
+              menu.innerHTML += '<li><a href="/ver-pacientes">Ver Pacientes</a></li>';
+              menu.innerHTML += '<li><a href="/reg-paciente.html">Registrar Paciente</a></li>';
+              menu.innerHTML += '<li><a href="/editar-pacientes">Editar Pacientes</a></li>';
+              menu.innerHTML += '<li><a href="/equipos.html">Equipos</a></li>';
+          } else if (tipoUsuario === 'paciente') {
+              menu.innerHTML += '<li><a href="/ver-mis-datos">Mis Datos</a></li>';
+          }else if (tipoUsuario === 'tecnico') {
+              menu.innerHTML += '<li><a href="/ultimo_uso.html">Ultimo servicio</a></li>';
+              menu.innerHTML += '<li><a href="/ver-mis-datos">Mis Datos</a></li>';
+          }
+
+          // Opción de cerrar sesión para todos los tipos de usuario
+          menu.innerHTML += '<li><a href="/logout">Cerrar Sesión</a></li>';
+      })
+      .catch(error => console.error('Error obteniendo el tipo de usuario:', error));
+</script>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Búsqueda en Tiempo Real</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="navbar"></div>
+  <h1>Búsqueda en Tiempo Real</h1>
+  <input type="text" id="search" placeholder="Buscar usuario..." />
+  <ul id="results"></ul>
+
+  <script src="navbar.html"></script>
+  <script>
+    document.getElementById('search').addEventListener('keyup', function() {
+      const query = this.value;
+      fetch(`/buscar?query=${query}`)
+        .then(res => res.json())
+        .then(data => {
+          const results = document.getElementById('results');
+          results.innerHTML = '';
+          data.forEach(usuarios => {
+            const li = document.createElement('li');
+            li.textContent = `${usuarios.nombre_usuario} (${usuarios.tipo_usuario})`;
+            results.appendChild(li);
+          });
+        });
+    });
+  </script>
+</body>
+</html>
