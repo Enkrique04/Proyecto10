@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Editar Paciente</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <!-- Incluir barra de navegación desde navbar.html -->
+  <div id="navbar"></div>
+
+  <script>
+      // Insertar el contenido de navbar.html en el elemento con id "navbar"
+      fetch('/navbar.html')
+          .then(response => response.text())
+          .then(data => {
+              document.getElementById('navbar').innerHTML = data;
+          })
+          .catch(error => console.error('Error cargando el navbar:', error));
+  </script>
+</body>
+</html>
+
+<script>
+  // Solicitar el tipo de usuario y ajustar el menú en función de este
+  fetch('/tipo-usuario')
+      .then(response => response.json())
+      .then(data => {
+          const menu = document.getElementById('menu');
+          const tipoUsuario = data.tipo_usuario;
+
+          // Agregar opciones de menú según el tipo de usuario
+          menu.innerHTML += '<li><a href="/">Inicio</a></li>';
+          if (tipoUsuario === 'admin') {
+              menu.innerHTML += '<li><a href="/ver-usuarios">Ver Usuarios</a></li>';
+              menu.innerHTML += '<li><a href="/busqueda.html">Busqueda</a></li>';
+              menu.innerHTML += '<li><a href="/ver-pacientes">Ver Pacientes</a></li>';
+              menu.innerHTML += '<li><a href="/equipos.html">Equipos</a></li>';
+              menu.innerHTML += '<li><a href="/insertar.html">Insertar medicos</a></li>';
+              menu.innerHTML += '<li><a href="/ultimo_uso.html">Ultimo servicio</a></li>';
+              menu.innerHTML += '<li><a href="/tecnico.html">Contratar tecnico</a></li>';
+              menu.innerHTML += '<li><a href="/editar-columnas.html">Columnas</a></li>';
+          } else if (tipoUsuario === 'medico') {
+              menu.innerHTML += '<li><a href="/ver-pacientes">Ver Pacientes</a></li>';
+              menu.innerHTML += '<li><a href="/reg-paciente.html">Registrar Paciente</a></li>';
+              menu.innerHTML += '<li><a href="/busqueda.html">Busqueda</a></li>';
+              menu.innerHTML += '<li><a href="/equipos.html">Equipos</a></li>';
+          } else if (tipoUsuario === 'paciente') {
+              menu.innerHTML += '<li><a href="/ver-mis-datos">Mis Datos</a></li>';
+          }else if (tipoUsuario === 'tecnico') {
+              menu.innerHTML += '<li><a href="/ultimo_uso.html">Ultimo servicio</a></li>';
+              menu.innerHTML += '<li><a href="/ver-mis-datos">Mis Datos</a></li>';
+          }
+
+          // Opción de cerrar sesión para todos los tipos de usuario
+          menu.innerHTML += '<li><a href="/logout">Cerrar Sesión</a></li>';
+      })
+      .catch(error => console.error('Error obteniendo el tipo de usuario:', error));
+</script>
+<body>
+  <link rel="stylesheet" href="/styles.css">
+
+  <h2>Editar Paciente</h2>
+  <form id="buscarPacienteForm">
+    <label for="paciente-id">ID del Paciente:</label>
+    <input type="number" id="paciente-id" required>
+    <button type="button" onclick="buscarPaciente()">Buscar</button>
+  </form>
+  
+  <form id="editarPacienteForm" style="display: none;" method="POST" action="/editar-pacientes">
+    <input type="hidden" id="paciente-id-hidden" name="id">
+    
+    <label for="nombre">Nombre:</label>
+    <input type="text" id="nombre" name="nombre" required>
+
+    <label for="edad">Edad:</label>
+    <input type="number" id="edad" name="edad" required>
+
+    <label for="frecuencia-cardiaca">Frecuencia Cardiaca (bpm):</label>
+    <input type="number" id="frecuencia-cardiaca" name="frecuencia_cardiaca" required>
+
+    <label for="altura">Altura (cm)</label>
+    <input type="text" id="altura" name="altura" required>
+
+    <label for="medico_id">ID del medico:</label>
+    <input type="number" id="medico_id" name="medico_id" step="0.1" required>
+
+    <button type="submit">Guardar Cambios</button>
+    <button type="button" onclick="eliminarPaciente()">Eliminar Paciente</button>
+  </form>
+
+  <script>
+    function buscarPaciente() {
+      const pacienteId = document.getElementById('paciente-id').value;
+      fetch(`/obtener-paciente/${pacienteId}`)
+        .then(response => {
+          if (!response.ok) throw new Error('Paciente no encontrado');
+          return response.json();
+        })
+        .then(data => {
+          document.getElementById('editarPacienteForm').style.display = 'block';
+          document.getElementById('paciente-id-hidden').value = data.id;
+          document.getElementById('nombre').value = data.nombre;
+          document.getElementById('edad').value = data.edad;
+          document.getElementById('frecuencia-cardiaca').value = data.frecuencia_cardiaca;
+          document.getElementById('altura').value = data.altura;
+          document.getElementById('medico_id').value = data.medico_id;
+        })
+        .catch(error => alert(error.message));
+    }
+
+    function eliminarPaciente() {
+      const pacienteId = document.getElementById('paciente-id-hidden').value;
+      if (confirm('¿Estás seguro de que deseas eliminar este paciente?')) {
+        fetch(`/eliminar-paciente/${pacienteId}`, {
+          method: 'DELETE'
+        })
+        .then(response => {
+          if (response.ok) {
+            alert('Paciente eliminado correctamente.');
+            window.location.href = '/Ver-pacientes'; // Redirigir a la lista de pacientes
+          } else {
+            alert('Error al eliminar el paciente.');
+          }
+        })
+        .catch(error => console.error('Error al eliminar el paciente:', error));
+      }
+    }
+  </script>
+
+  <button onclick="window.location.href='/'">Volver</button>
+</body>
+</html>
