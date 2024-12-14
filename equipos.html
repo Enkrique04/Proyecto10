@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<body>
+  <!-- Incluir barra de navegación desde navbar.html -->
+  <div id="navbar"></div>
+
+  <script>
+      // Insertar el contenido de navbar.html en el elemento con id "navbar"
+      fetch('/navbar.html')
+          .then(response => response.text())
+          .then(data => {
+              document.getElementById('navbar').innerHTML = data;
+          })
+          .catch(error => console.error('Error cargando el navbar:', error));
+  </script>
+</body>
+</html>
+
+<script>
+  // Solicitar el tipo de usuario y ajustar el menú en función de este
+  fetch('/tipo-usuario')
+      .then(response => response.json())
+      .then(data => {
+          const menu = document.getElementById('menu');
+          const tipoUsuario = data.tipo_usuario;
+
+          menu.innerHTML += '<li><a href="/">Inicio</a></li>';
+          if (tipoUsuario === 'admin') {
+              menu.innerHTML += '<li><a href="/ver-usuarios">Ver Usuarios</a></li>';
+              menu.innerHTML += '<li><a href="/busqueda.html">Busqueda</a></li>';
+              menu.innerHTML += '<li><a href="/ver-pacientes">Ver Pacientes</a></li>';
+              menu.innerHTML += '<li><a href="/insertar.html">Insertar medicos</a></li>';
+              menu.innerHTML += '<li><a href="/ultimo_uso.html">Ultimo servicio</a></li>';
+              menu.innerHTML += '<li><a href="/tecnico.html">Contratar tecnico</a></li>';
+              menu.innerHTML += '<li><a href="/editar-columnas.html">Columnas</a></li>';
+          } else if (tipoUsuario === 'medico') {
+              menu.innerHTML += '<li><a href="/ver-pacientes">Ver Pacientes</a></li>';
+              menu.innerHTML += '<li><a href="/reg-paciente.html">Registrar Paciente</a></li>';
+              menu.innerHTML += '<li><a href="/busqueda.html">Busqueda</a></li>';
+              menu.innerHTML += '<li><a href="/editar-pacientes">Editar Pacientes</a></li>';
+          } else if (tipoUsuario === 'paciente') {
+              menu.innerHTML += '<li><a href="/ver-mis-datos">Mis Datos</a></li>';
+          }else if (tipoUsuario === 'tecnico') {
+              menu.innerHTML += '<li><a href="/ultimo_uso.html">Ultimo servicio</a></li>';
+              menu.innerHTML += '<li><a href="/ver-mis-datos">Mis Datos</a></li>';
+          }
+
+          // Opción de cerrar sesión para todos los tipos de usuario
+          menu.innerHTML += '<li><a href="/logout">Cerrar Sesión</a></li>';
+      })
+      .catch(error => console.error('Error obteniendo el tipo de usuario:', error));
+</script>
+
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Equipos</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="navbar"></div>
+  <h1>Cargar Equipos desde Excel</h1>
+  <form action="/upload" method="POST" enctype="multipart/form-data">
+    <input type="file" name="excelFile" accept=".xlsx" />
+    <button type="submit">Subir Archivo</button>
+  </form>
+
+  <script src="navbar.html"></script>
+</body>
+
+<button onclick="window.location.href='/download'">Descargar Equipos en Excel</button>
+<button onclick="window.location.href='/downloadpdf'">Descargar Equipos en PDF</button>
+
+</html>
