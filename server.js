@@ -641,7 +641,7 @@ app.get('/sugerencias', requireLogin,requireRole('admin'), (req, res) => {
       <title>Medicos</title>
     </head>
     <body>
-      <h1>Medicos Registrados</h1>
+      <h1>Reseñas de doctores</h1>
       <table>
         <thead>
           <tr>
@@ -1142,6 +1142,7 @@ app.post('/editar-columna', (req, res) => {
     <body>
       <h1>La columna "${columna_actual}" ha sido renombrada a "${nuevo_nombre}" y su tipo ha sido actualizado.</h1>
     `;
+
     
     html += `
       <button onclick="window.location.href='/'">Volver</button>
