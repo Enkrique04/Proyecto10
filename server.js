@@ -318,7 +318,6 @@ app.post('/editar-pacientes', requireLogin, requireRole('medico', 'admin'), (req
   });
 });
 
-
 app.delete('/eliminar-paciente/:id', requireLogin, requireRole('medico', 'admin'), (req, res) => {
   const { id } = req.params; 
   const query = 'DELETE FROM pacientes WHERE id = ?';
@@ -332,6 +331,62 @@ app.delete('/eliminar-paciente/:id', requireLogin, requireRole('medico', 'admin'
     </head>
     <body>
       <h1>Paciente con ID ${id} eliminado exitosamente.</h1>
+      <button onclick="window.location.href='/'">Volver</button>
+    </body>
+    </html>
+  `;
+  res.send(html);
+  });
+});
+
+app.get('/editar-medico', requireLogin, requireRole('admin'), (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'editar-medico.html'));
+});
+
+app.get('/obtener-medico/:id', requireLogin, requireRole('medico', 'admin'), (req, res) => {
+  const { id } = req.params;
+  const query = 'SELECT * FROM medicos WHERE id = ?';
+  connection.query(query, [id], (err, results) => {
+    if (err) return res.status(500).send('Error al obtener el medicos');
+    if (results.length === 0) return res.status(404).send('Medico no encontrado');
+    res.json(results[0]);
+  });
+});
+
+app.post('/editar-medico', requireLogin, requireRole('medico', 'admin'), (req, res) => {
+  const { id, nombre, especialidad, salario} = req.body;
+  const query = 'UPDATE medicos SET nombre = ?, especialidad = ?, salario = ? WHERE id = ?';
+  connection.query(query, [nombre, especialidad, salario, id], (err, result) => {
+    if (err) return res.send('Error al actualizar los datos del medicos.');
+    const html = `
+      <html>
+      <head>
+        <link rel="stylesheet" href="/styles.css">
+      </head>
+      <body>
+        <h1>Medico ${nombre} actualizado correctamente.</h1>
+        <button onclick="window.location.href='/'">Volver</button>
+      </body>
+      </html>
+    `;
+    res.send(html);
+
+  });
+});
+
+app.delete('/eliminar-medico/:id', requireLogin, requireRole('admin'), (req, res) => {
+  const { id } = req.params; 
+  const query = 'DELETE FROM medicos WHERE id = ?';
+  connection.query(query, [id], (err, result) => {
+    if (err) return res.status(500).send('Error al eliminar el medico');
+    if (result.affectedRows === 0) return res.status(404).send('Medico no encontrado');
+    const html = `
+    <html>
+    <head>
+      <link rel="stylesheet" href="/styles.css">
+    </head>
+    <body>
+      <h1>Medico con ID ${id} eliminado exitosamente.</h1>
       <button onclick="window.location.href='/'">Volver</button>
     </body>
     </html>
